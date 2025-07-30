@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Hotel Booking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #e0ffe7 0%, #f7f7f7 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        .register-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .register-card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(30,141,67,0.13), 0 2px 8px rgba(0,0,0,0.07);
+            padding: 44px 38px 32px 38px;
+            width: 100%;
+            max-width: 420px;
+            border: 1.5px solid #e0f5e7;
+        }
+        .register-title {
+            text-align: center;
+            color: #1e8d43;
+            margin-bottom: 30px;
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .register-form label {
+            font-weight: 600;
+            color: #1e8d43;
+            margin-bottom: 2px;
+            font-size: 15px;
+        }
+        .register-form input[type="text"],
+        .register-form input[type="email"],
+        .register-form input[type="password"] {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1.5px solid #b7e2c7;
+            border-radius: 7px;
+            font-size: 15px;
+            background: #f7fff9;
+            transition: border-color 0.2s;
+        }
+        .register-form input:focus {
+            border-color: #1e8d43;
+            outline: none;
+            background: #f0fff3;
+        }
+        .register-button {
+            margin-top: 10px;
+            padding: 13px;
+            background: linear-gradient(90deg, #1e8d43 60%, #5cb85c 100%);
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(30,141,67,0.08);
+            transition: background 0.2s;
+        }
+        .register-button:hover {
+            background: linear-gradient(90deg, #16672b 60%, #4cae4c 100%);
+        }
+        .errorlist {
+            margin-top: 2px;
+            color: #d32f2f;
+            font-size: 13px;
+        }
+        .error {
+            display: block;
+            margin-top: 2px;
+        }
+        .register-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #1e8d43;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .register-link:hover {
+            color: #16672b;
+            text-decoration: underline;
+        }
+        .main-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-bottom: 18px;
+            background: #1e8d43;
+            color: white;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .main-btn:hover {
+            background: #16672b;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-wrapper">
+        <div class="register-card">
+            <div style="text-align:left;margin-bottom:18px;">
+                <a href="/" class="main-btn">Back to Main</a>
+            </div>
+            <h2 class="register-title">Create your account</h2>
+            <form method="post" class="register-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="errorlist">
+                                {% for error in field.errors %}
+                                    <span class="error">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="register-button">Register</button>
+            </form>
+            <a href="/accounts/login/" class="register-link">Already have an account? Login</a>
+        </div>
+    </div>
+</body>
+</html>

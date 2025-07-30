@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Room | Hotel Booking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #e0ffe7 0%, #f7f7f7 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        .add-room-container {
+            max-width: 420px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(30,141,67,0.10), 0 1.5px 6px rgba(0,0,0,0.07);
+            padding: 36px 32px 28px 32px;
+            border: 1.5px solid #e0f5e7;
+        }
+        .add-room-title {
+            text-align: center;
+            color: #1e8d43;
+            margin-bottom: 28px;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .add-room-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        label {
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 2px;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #b7e2c7;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #f7fff9;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #1e8d43;
+            outline: none;
+            background: #f0fff3;
+        }
+        .add-room-button {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #1e8d43;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(30,141,67,0.08);
+            transition: background-color 0.2s;
+        }
+        .add-room-button:hover {
+            background-color: #16672b;
+        }
+        .errorlist {
+            margin-top: 2px;
+            color: #d32f2f;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; justify-content: flex-end; gap: 12px; margin: 18px 32px 0 0;">
+        {% if user.is_authenticated %}
+            <form method="post" action="/accounts/logout/" style="display:inline;">
+                {% csrf_token %}
+            </form>
+        {% endif %}
+    </div>
+    <div class="add-room-container">
+        <h2 class="add-room-title">{% if edit_mode %}Edit Room {{ room.number }}{% else %}Add New Room{% endif %}</h2>
+        <form method="post" enctype="multipart/form-data" class="add-room-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="errorlist">
+                            {% for error in field.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <label for="id_images">Room Photos</label>
+                <input type="file" name="images" id="id_images" multiple class="form-control" accept="image/*">
+            </div>
+            <button type="submit" class="add-room-button">{% if edit_mode %}Save Changes{% else %}Add Room{% endif %}</button>
+        </form>
+    </div>
+</body>
+</html>

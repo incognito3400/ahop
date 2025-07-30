@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms | Hotel Booking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #e0ffe7 0%, #f7f7f7 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 30px 24px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(30,141,67,0.13), 0 2px 8px rgba(0,0,0,0.07);
+            border: 1.5px solid #e0f5e7;
+        }
+        .rooms-title {
+            color: #1e8d43;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .rooms-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+        }
+        .room-card {
+            background: #f7fff9;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(30,141,67,0.08);
+            padding: 28px 22px 22px 22px;
+            border: 1.5px solid #b7e2c7;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
+        .room-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e8d43;
+            margin-bottom: 10px;
+        }
+        .room-type {
+            font-size: 1rem;
+            color: #444;
+            margin-bottom: 8px;
+        }
+        .room-price {
+            font-size: 1.1rem;
+            color: #222;
+            margin-bottom: 14px;
+        }
+        .room-status {
+            font-size: 1rem;
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+        .book-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: linear-gradient(90deg, #1e8d43 60%, #5cb85c 100%);
+            color: #fff;
+            border-radius: 7px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(30,141,67,0.08);
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .book-btn:hover {
+            background: linear-gradient(90deg, #16672b 60%, #4cae4c 100%);
+        }
+        .main-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #1e8d43;
+            color: #fff;
+            border-radius: 7px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(30,141,67,0.08);
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .main-btn:hover {
+            background: #16672b;
+        }
+        .not-available {
+            color: #d32f2f;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; justify-content: flex-end; gap: 12px; margin: 18px 32px 0 0;">
+        <!-- Language Switcher -->
+        <button onclick="setLanguage('ua')" id="lang-ua" style="padding:6px 14px;border-radius:6px;border:none;background:#e0ffe7;color:#1e8d43;font-weight:600;cursor:pointer;">UA</button>
+        <button onclick="setLanguage('en')" id="lang-en" style="padding:6px 14px;border-radius:6px;border:none;background:#e0ffe7;color:#1e8d43;font-weight:600;cursor:pointer;">EN</button>
+    </div>
+    <div class="container">
+        <div style="text-align:left;margin-bottom:18px;">
+            <a href="/" class="main-btn" style="background: #1e8d43;">Back to Main</a>
+        </div>
+        <h2 class="rooms-title">Available Rooms</h2>
+        {% if user.is_staff %}
+            <div style="text-align:right;margin-bottom:18px;display:flex;gap:12px;justify-content:flex-end;">
+                <a href="{% url 'add_room' %}" class="book-btn" style="background: #1e8d43;">Add Room</a>
+            </div>
+        {% endif %}
+        <div class="rooms-list">
+            {% for room in rooms %}
+            <div class="room-card">
+                <a href="{% url 'room_detail' room.id %}" style="width:100%;text-align:center;display:block;">
+                    {% if room.photos.all %}
+                        {% with photo=room.photos.first %}
+                            {% if photo %}
+                                <img src="{{ photo.image.url }}" alt="Room photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
+                            {% else %}
+                                <img src="{% static 'images/registration.jpg' %}" alt="Room photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <img src="{% static 'images/registration.jpg' %}" alt="Room photo" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
+                    {% endif %}
+                </a>
+                <div class="room-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                    <a href="{% url 'room_detail' room.id %}" style="color:#1e8d43;text-decoration:none;">Room {{ room.number }}</a>
+                    {% if user.is_staff %}
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <a href="{% url 'edit_room' room.id %}" style="background:#1e8d43;color:#fff;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:0.95em;text-decoration:none;">Edit</a>
+                        <form method="post" action="{% url 'delete_room' room.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background:#d32f2f;color:#fff;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:0.95em;">Delete</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="room-type">Type: {{ room.get_type_display }}</div>
+                <div class="room-price">${{ room.price }} per night</div>
+                {% if room.is_available %}
+                    <a href="{% url 'book_room' room.id %}" class="book-btn">Book Now</a>
+                {% else %}
+                    <div class="not-available">Not Available</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+    // ...existing code...
+    function setLanguage(lang) {
+        const labels = {
+            ua: {
+                'Available Rooms': 'Доступні кімнати',
+                'Add Room': 'Додати кімнату',
+                'Book Now': 'Забронювати',
+                'Not Available': 'Недоступно',
+                'Type:': 'Тип:',
+                'Price per night:': 'Ціна за ніч:',
+                'Rooms:': 'Кімнат:',
+                'Size:': 'Розмір:',
+                'Floors:': 'Поверхи:'
+            },
+            en: {
+                'Available Rooms': 'Available Rooms',
+                'Add Room': 'Add Room',
+                'Book Now': 'Book Now',
+                'Not Available': 'Not Available',
+                'Type:': 'Type:',
+                'Price per night:': 'Price per night:',
+                'Rooms:': 'Rooms:',
+                'Size:': 'Size:',
+                'Floors:': 'Floors:'
+            }
+        };
+        document.querySelector('.rooms-title').innerText = labels[lang]['Available Rooms'];
+        let addBtn = document.querySelector('.book-btn[style*="background: #1e8d43;"]');
+        if(addBtn) addBtn.innerText = labels[lang]['Add Room'];
+        document.querySelectorAll('.book-btn').forEach(btn => {
+            if(btn.innerText.trim() === 'Book Now' || btn.innerText.trim() === 'Забронювати')
+                btn.innerText = labels[lang]['Book Now'];
+        });
+        document.querySelectorAll('.not-available').forEach(el => {
+            el.innerText = labels[lang]['Not Available'];
+        });
+        // Save language
+        localStorage.setItem('lang', lang);
+    }
+    (function() {
+        let lang = localStorage.getItem('lang') || 'en';
+        setLanguage(lang);
+    })();
+    </script>
+</body>
+</html>

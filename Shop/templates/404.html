@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 - Page Not Found</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fefae0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      color: #333;
+      text-align: center;
+    }
+    .error-code {
+      font-size: 8rem;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+    .message {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    a.button {
+      padding: 10px 20px;
+      background-color: #388e3c;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    a.button:hover {
+      background-color: #2e7d32;
+    }
+    img {
+      margin-top: 25px;
+      max-width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="error-code">404</div>
+  <div class="message">Oops! This page doesn't exist.</div>
+  <a href="/" class="button">Go Back Home</a>

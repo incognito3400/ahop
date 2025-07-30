@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookings | Hotel Booking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #e0ffe7 0%, #f7f7f7 100%);
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(30,141,67,0.13), 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .bookings-title {
+      color: #1e8d43;
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .booking-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border: 1px solid #e0f5e7;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .room-img {
+      width: 180px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+    }
+    .booking-info {
+      flex-grow: 1;
+    }
+    .booking-info h3 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+      color: #1e8d43;
+    }
+    .booking-info p {
+      margin: 4px 0;
+      color: #333;
+    }
+    .booking-info .status-confirmed {
+      color: #2e7d32;
+      font-weight: 600;
+    }
+    .booking-info .status-cancelled {
+      color: #d32f2f;
+      font-weight: 600;
+    }
+    .booking-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cancel-btn, .delete-btn, .main-action, .main-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .cancel-btn {
+      background: #d32f2f;
+      color: #fff;
+    }
+    .cancel-btn:hover {
+      background: #b71c1c;
+    }
+    .delete-btn {
+      background: #555;
+      color: #fff;
+    }
+    .delete-btn:hover {
+      background: #333;
+    }
+    .main-btn {
+      background: #1e8d43;
+      color: #fff;
+    }
+    .main-btn:hover {
+      background: #16672b;
+    }
+    .main-action {
+      background: linear-gradient(90deg, #1e8d43, #5cb85c);
+      color: #fff;
+      margin-top: 30px;
+    }
+    .main-action:hover {
+      background: linear-gradient(90deg, #16672b, #4cae4c);
+    }
+    .no-bookings {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #888;
+      padding: 40px 0;
+    }
+    .lang-switcher {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin: 18px 32px 0 0;
+    }
+    .lang-switcher button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #e0ffe7;
+      color: #1e8d43;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="lang-switcher">
+    <button onclick="setLanguage('ua')" id="lang-ua">UA</button>
+    <button onclick="setLanguage('en')" id="lang-en">EN</button>
+  </div>
+
+  <div class="container">
+    <div style="margin-bottom: 20px;">
+      <a href="/" class="main-btn">← Back to Main</a>
+    </div>
+
+    <h2 class="bookings-title">My Bookings</h2>
+
+    {% if bookings %}
+      {% for booking in bookings %}
+      <div class="booking-card">
+        {% if booking.room.photos.all %}
+          {% with photo=booking.room.photos.all.0 %}
+            <img src="{{ photo.image.url }}" class="room-img" alt="Room image">
+          {% endwith %}
+        {% else %}
+          <img src="{% static 'images/nature.jpg' %}" class="room-img" alt="Default room image">
+        {% endif %}
+        <div class="booking-info">
+          <h3>{{ booking.room.get_type_display }} (Room {{ booking.room.number }})</h3>
+          <p><strong>Check-in:</strong> {{ booking.check_in_date }}</p>
+          <p><strong>Check-out:</strong> {{ booking.check_out_date }}</p>
+          <p><strong>Nights:</strong> {{ booking.nights }}</p>
+          <p><strong>Price/night:</strong> ${{ booking.room.price }}</p>
+          <p><strong>Total:</strong> ${{ booking.total_price }}</p>
+          <p>Status: 
+            {% if booking.is_confirmed %}
+              <span class="status-confirmed">Confirmed</span>
+            {% else %}
+              <span class="status-cancelled">Cancelled</span>
+            {% endif %}
+          </p>
+        </div>
+        <div class="booking-actions">
+          {% if booking.is_confirmed %}
+          <form method="post" action="{% url 'cancel_booking' booking.id %}">
+            {% csrf_token %}
+            <button type="submit" class="cancel-btn">Cancel</button>
+          </form>
+          {% else %}
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="no-bookings">You have no bookings yet.</div>
+    {% endif %}
+
+    <a href="/available_rooms" class="main-action">Book a Room</a>
+  </div>
+
+  <script>
+    function setLanguage(lang) {
+      const labels = {
+        ua: {
+          'My Bookings': 'Мої бронювання',
+          'Back to Main': 'На головну',
+          'Check-in:': 'Дата заїзду:',
+          'Check-out:': 'Дата виїзду:',
+          'Nights:': 'Ночей:',
+          'Price/night:': 'Ціна за ніч:',
+          'Total:': 'Загалом:',
+          'Status:': 'Статус:',
+          'Confirmed': 'Підтверджено',
+          'Cancelled': 'Скасовано',
+          'Cancel': 'Скасувати',
+          'You have no bookings yet.': 'Бронювань ще немає.',
+          'Book a Room': 'Забронювати номер'
+        },
+        en: {
+          'My Bookings': 'My Bookings',
+          'Back to Main': 'Back to Main',
+          'Check-in:': 'Check-in:',
+          'Check-out:': 'Check-out:',
+          'Nights:': 'Nights:',
+          'Price/night:': 'Price/night:',
+          'Total:': 'Total:',
+          'Status:': 'Status:',
+          'Confirmed': 'Confirmed',
+          'Cancelled': 'Cancelled',
+          'Cancel': 'Cancel',
+          'You have no bookings yet.': 'You have no bookings yet.',
+          'Book a Room': 'Book a Room'
+        }
+      };
+
+      document.querySelector('.bookings-title').innerText = labels[lang]['My Bookings'];
+      document.querySelector('.main-btn').innerText = '← ' + labels[lang]['Back to Main'];
+      document.querySelectorAll('.booking-info').forEach(info => {
+        info.innerHTML = info.innerHTML
+          .replace(/Check-in:/g, labels[lang]['Check-in:'])
+          .replace(/Check-out:/g, labels[lang]['Check-out:'])
+          .replace(/Nights:/g, labels[lang]['Nights:'])
+          .replace(/Price\/night:/g, labels[lang]['Price/night:'])
+          .replace(/Total:/g, labels[lang]['Total:'])
+          .replace(/Status:/g, labels[lang]['Status:'])
+          .replace(/Confirmed/g, labels[lang]['Confirmed'])
+          .replace(/Cancelled/g, labels[lang]['Cancelled']);
+      });
+      document.querySelectorAll('.cancel-btn').forEach(btn => btn.innerText = labels[lang]['Cancel']);
+      let noBookings = document.querySelector('.no-bookings');
+      if(noBookings) noBookings.innerText = labels[lang]['You have no bookings yet.'];
+      document.querySelector('.main-action').innerText = labels[lang]['Book a Room'];
+
+      localStorage.setItem('lang', lang);
+    }
+
+    (function() {
+      let lang = localStorage.getItem('lang') || 'en';
+      setLanguage(lang);
+    })();
+  </script>
+</body>
+</html>

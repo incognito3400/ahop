@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(255, 252, 234);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: rgb(30, 141, 67);
+            color: #000;
+            padding: 20px 0;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #fff;
+        }
+        a.button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #5cb85c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a.button:hover {
+            background-color: #4cae4c;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 32px;
+        }
+        .welcome-block {
+            background: linear-gradient(120deg, #e0ffe7 0%, #f7f7f7 100%);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(30,141,67,0.10), 0 1.5px 6px rgba(0,0,0,0.07);
+            padding: 36px 32px;
+        }
+        .welcome-block h2 {
+            color: #1e8d43;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+        .welcome-block p {
+            color: #444;
+            font-size: 1.1rem;
+            margin-bottom: 22px;
+        }
+        .main-action {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(90deg, #1e8d43 60%, #5cb85c 100%);
+            color: #fff;
+            border-radius: 7px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .main-action:hover {
+            background: linear-gradient(90deg, #16672b 60%, #4cae4c 100%);
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .gallery a img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div style="display: flex; justify-content: flex-end; gap: 12px; margin: 0 32px 12px 0;">
+        <button onclick="setLanguage('ua')" id="lang-ua" style="padding:6px 14px;border-radius:6px;border:none;background:#e0ffe7;color:#1e8d43;font-weight:600;cursor:pointer;">UA</button>
+        <button onclick="setLanguage('en')" id="lang-en" style="padding:6px 14px;border-radius:6px;border:none;background:#e0ffe7;color:#1e8d43;font-weight:600;cursor:pointer;">EN</button>
+        {% if user.is_authenticated %}
+            <form method="post" action="/accounts/logout/" style="display:inline; margin-left: 16px;">
+                {% csrf_token %}
+                <button type="submit" style="background:#d32f2f;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:600;cursor:pointer;">Logout</button>
+            </form>
+        {% endif %}
+    </div>
+    <h1>Hotel Booking System</h1>
+    <nav>
+        <a href="/available_rooms">Available Rooms</a>
+        <a href="/my_bookings">My Bookings</a>
+        <a href="/accounts/login/">Login</a>
+        <a href="/register">Register</a>
+    </nav>
+</header>
+<div class="container">
+    <div class="main-content">
+        <div class="welcome-block">
+            <h2>Welcome to the Hotel Booking System</h2>
+            <p>Book your perfect stay with ease and comfort. Explore available rooms, manage your bookings, and enjoy a seamless experience!</p>
+            <a href="/available_rooms" class="main-action">Find a Room</a>
+        </div>
+        <div class="gallery">
+            {% for room in rooms %}
+                {% with photo=room.photos.first %}
+                    <a href="{% url 'room_detail' room.id %}">
+                        {% if photo %}
+                            <img src="{{ photo.image.url }}" alt="Room {{ room.number }}">
+                        {% else %}
+                            <img src="{% static 'images/registration.jpg' %}" alt="Room {{ room.number }}">
+                        {% endif %}
+                    </a>
+                {% endwith %}
+            {% empty %}
+                <img src="{% static 'images/registration.jpg' %}" alt="No rooms available">
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+// Language switcher (demo, no backend i18n)
+function setLanguage(lang) {
+    const labels = {
+        ua: {
+            'Hotel Booking System': 'Система бронювання готелів',
+            'Available Rooms': 'Доступні кімнати',
+            'My Bookings': 'Мої бронювання',
+            'Login': 'Вхід',
+            'Register': 'Реєстрація',
+            'Welcome to the Hotel Booking System': 'Ласкаво просимо до системи бронювання готелів',
+            'Book your perfect stay with ease and comfort. Explore available rooms, manage your bookings, and enjoy a seamless experience!': 'Бронюйте ідеальне житло зручно та швидко. Переглядайте доступні кімнати, керуйте бронюваннями та насолоджуйтесь сервісом!',
+            'Find a Room': 'Знайти кімнату'
+        },
+        en: {
+            'Hotel Booking System': 'Hotel Booking System',
+            'Available Rooms': 'Available Rooms',
+            'My Bookings': 'My Bookings',
+            'Login': 'Login',
+            'Register': 'Register',
+            'Welcome to the Hotel Booking System': 'Welcome to the Hotel Booking System',
+            'Book your perfect stay with ease and comfort. Explore available rooms, manage your bookings, and enjoy a seamless experience!': 'Book your perfect stay with ease and comfort. Explore available rooms, manage your bookings, and enjoy a seamless experience!',
+            'Find a Room': 'Find a Room'
+        }
+    };
+    // Header
+    document.querySelector('header h1').innerText = labels[lang]['Hotel Booking System'];
+    // Navigation
+    let navLinks = document.querySelectorAll('nav a');
+    navLinks[0].innerText = labels[lang]['Available Rooms'];
+    navLinks[1].innerText = labels[lang]['My Bookings'];
+    navLinks[2].innerText = labels[lang]['Login'];
+    navLinks[3].innerText = labels[lang]['Register'];
+    // Welcome block
+    let welcomeTitle = document.querySelector('.welcome-block h2');
+    if(welcomeTitle) welcomeTitle.innerText = labels[lang]['Welcome to the Hotel Booking System'];
+    let welcomeP = document.querySelector('.welcome-block p');
+    if(welcomeP) welcomeP.innerText = labels[lang]['Book your perfect stay with ease and comfort. Explore available rooms, manage your bookings, and enjoy a seamless experience!'];
+    let mainAction = document.querySelector('.main-action');
+    if(mainAction) mainAction.innerText = labels[lang]['Find a Room'];
+    // Save language
+    localStorage.setItem('lang', lang);
+}
+// On load, set language
+(function() {
+    let lang = localStorage.getItem('lang') || 'en';
+    setLanguage(lang);
+})();
+</script>
+</body>
+</html>
